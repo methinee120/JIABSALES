@@ -41,5 +41,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Require for Food Image Upload to Server</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Require for Food Image Upload to Server</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Require for Food Image Upload to Server</string>
 </dict>
 </plist>

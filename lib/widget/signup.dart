@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jiabsales/utility/normal_dialog.dart';
 
@@ -10,16 +12,49 @@ class _SignUpState extends State<SignUp> {
   String type;
   String name = '', user = '', password = '';
 
+  Future<Null> registerThrade() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    await auth
+        .createUserWithEmailAndPassword(email: user, password: password)
+        .then((value) async {
+      print('Register Success');
+      FirebaseUser firebaseUser = value.user;
+      UserUpdateInfo info = UserUpdateInfo();
+      info.displayName = name;
+      firebaseUser.updateProfile(info);
+      String uid = firebaseUser.uid;
+      print('uid = $uid');
+
+      Firestore firestore = Firestore.instance;
+      Map<String, dynamic> map = Map();
+      map['Name'] = name;
+      map['Type'] = type;
+
+      await firestore
+          .collection('User')
+          .document(uid)
+          .setData(map)
+          .then((value) {
+        Navigator.pop(context);
+      });
+    }).catchError((value) {
+      String string = value.message;
+      normalDialog(context, string);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (name.isEmpty || user.isEmpty || password.isEmpty )  {
+          if (name.isEmpty || user.isEmpty || password.isEmpty) {
             normalDialog(context, 'โปรดกรอกทุกช่อง');
-          } else  if (type == null) {
+          } else if (type == null) {
             normalDialog(context, 'โปรดเลือกชนิดสมาชิก');
           } else {
+            registerThrade();
           }
         },
         child: Icon(Icons.cloud_upload),
